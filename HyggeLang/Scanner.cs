@@ -18,7 +18,7 @@ namespace HyggeLang
         {
             { "og", TokenType.OG},
             { "klass", TokenType.KLASSE },
-            { "ellers", TokenType.ELLER },
+            { "ellers", TokenType.ELLERS },
             { "falsk", TokenType.FALSK },
             { "for", TokenType.FOR },
             { "sjov", TokenType.SJOV },
@@ -195,7 +195,7 @@ namespace HyggeLang
                 while (IsDigit(Peek())) Advance();
             }
 
-            AddToken(TokenType.NUMBER, Double.Parse(_source[start..current]));
+            AddToken(TokenType.NUMBER, Double.Parse(_source[start..current], System.Globalization.CultureInfo.InvariantCulture));
         }
 
         private void Identifier()

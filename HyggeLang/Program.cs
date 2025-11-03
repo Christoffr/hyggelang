@@ -2,7 +2,10 @@
 {
     internal class Program
     {
+        private static Interpreter interpreter = new Interpreter();
         static bool hadError = false;
+        static bool hadRuntimeError = false;
+
         static void Main(string[] args)
         {
 
@@ -29,6 +32,10 @@
             if (hadError)
             {
                 Environment.Exit(65);
+            }
+            if (hadRuntimeError)
+            {
+                Environment.Exit(70);
             }
         }
 
@@ -61,15 +68,23 @@
             Parser parser = new Parser(tokens);
             Expr expression = parser.Parse();
 
+            // Stop if there was a syntax error
             if (hadError) return;
 
+            Console.WriteLine("Lexer (tokenize)");
             foreach (var token in tokens)
             {
                 Console.WriteLine(token);
             }
-
             Console.WriteLine();
+
+            Console.WriteLine("Parser (Abstract Syntax Tree)");
             Console.WriteLine(new AstPrinter().Print(expression));
+            Console.WriteLine();
+
+            Console.WriteLine("Interpreter");
+            interpreter.Interpret(expression);
+
         }
 
         public static void Error(int line, string message)
@@ -96,6 +111,12 @@
             Console.WriteLine($"[line {line}] Error {where}: {message}");
             Console.ResetColor();
             hadError = true;
+        }
+
+        public static void RuntimeError(RuntimeError error)
+        {
+            Console.WriteLine($"{error.Message}\n[line {error.Token.Line}]");
+            hadRuntimeError = true;
         }
     }
 }

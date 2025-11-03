@@ -28,7 +28,7 @@ namespace HyggeLang
             }
             catch (ParseError error)
             {
-
+                Synchronize();
                 return null;
             }
         }
