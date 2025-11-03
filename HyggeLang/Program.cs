@@ -9,7 +9,7 @@
             if (args.Length > 1)
             {
                 Console.WriteLine("For mange argumenter, du...");
-                System.Environment.Exit(64);
+                Environment.Exit(64);
             }
             else if (args.Length == 1)
             {
@@ -28,7 +28,7 @@
             Run(source);
             if (hadError)
             {
-                System.Environment.Exit(65);
+                Environment.Exit(65);
             }
         }
 
@@ -58,15 +58,35 @@
             Scanner scanner = new(source);
             List<Token> tokens = scanner.ScanTokens();
 
+            Parser parser = new Parser(tokens);
+            Expr expression = parser.Parse();
+
+            if (hadError) return;
+
             foreach (var token in tokens)
             {
                 Console.WriteLine(token);
             }
+
+            Console.WriteLine();
+            Console.WriteLine(new AstPrinter().Print(expression));
         }
 
         public static void Error(int line, string message)
         {
             Report(line, "", message);
+        }
+
+        public static void Error(Token token, string message)
+        {
+            if (token.Type == TokenType.EOF)
+            {
+                Report(token.Line, " at end", message);
+            }
+            else
+            {
+                Report(token.Line, " at '" + token.Lexeme + "'", message);
+            }
         }
 
         private static void Report(int line, string where, string message)
