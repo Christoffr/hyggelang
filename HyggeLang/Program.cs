@@ -12,7 +12,7 @@
             if (args.Length > 1)
             {
                 Console.WriteLine("For mange argumenter, du...");
-                Environment.Exit(64);
+                System.Environment.Exit(64);
             }
             else if (args.Length == 1)
             {
@@ -31,11 +31,11 @@
             Run(source);
             if (hadError)
             {
-                Environment.Exit(65);
+                System.Environment.Exit(65);
             }
             if (hadRuntimeError)
             {
-                Environment.Exit(70);
+                System.Environment.Exit(70);
             }
         }
 
@@ -66,24 +66,24 @@
             List<Token> tokens = scanner.ScanTokens();
 
             Parser parser = new Parser(tokens);
-            Expr expression = parser.Parse();
+            List<Stmt> statement = parser.Parse();
 
             // Stop if there was a syntax error
             if (hadError) return;
 
-            Console.WriteLine("Lexer (tokenize)");
-            foreach (var token in tokens)
-            {
-                Console.WriteLine(token);
-            }
-            Console.WriteLine();
+            //Console.WriteLine("Lexer (tokenize)");
+            //foreach (var token in tokens)
+            //{
+            //    Console.WriteLine(token);
+            //}
+            //Console.WriteLine();
 
-            Console.WriteLine("Parser (Abstract Syntax Tree)");
-            Console.WriteLine(new AstPrinter().Print(expression));
-            Console.WriteLine();
+            //Console.WriteLine("Parser (Abstract Syntax Tree)");
+            //Console.WriteLine(new AstPrinter().Print(expression));
+            //Console.WriteLine();
 
-            Console.WriteLine("Interpreter");
-            interpreter.Interpret(expression);
+            //Console.WriteLine("Interpreter");
+            interpreter.Interpret(statement);
 
         }
 

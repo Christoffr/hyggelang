@@ -209,7 +209,6 @@
 
             readonly public Token name;
         }
-
         internal abstract T Accept<T>(IVisitor<T> visitor);
     }
 }

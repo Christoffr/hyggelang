@@ -20,11 +20,29 @@ namespace HyggeLang
             _tokens = tokens;
         }
 
-        public Expr Parse()
+        public List<Stmt> Parse()
+        {
+            List<Stmt> statements = new();
+
+            while (!IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            return statements;
+        }
+
+        private Expr Expression()
+        {
+            return Equality();
+        }
+
+        private Stmt Declaration()
         {
             try
             {
-                return Expression();
+                if (Match(TokenType.SÆT)) return SætDeclaration();
+                return Statement();
             }
             catch (ParseError error)
             {
@@ -32,10 +50,37 @@ namespace HyggeLang
                 return null;
             }
         }
-
-        private Expr Expression()
+        private Stmt Statement()
         {
-            return Equality();
+            if (Match(TokenType.SKRIV)) return SkrivStatement();
+            return ExpressionStatement();
+        }
+
+        private Stmt SkrivStatement()
+        {
+            Expr value = Expression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after value");
+            return new Stmt.Skriv(value);
+        }
+
+        private Stmt SætDeclaration()
+        {
+            Token name = Consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+            Expr initializer = null;
+            if (Match(TokenType.EQUAL))
+            {
+                initializer = Expression();
+            }
+
+            Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+            return new Stmt.Sæt(name, initializer);
+        }
+        private Stmt ExpressionStatement()
+        {
+            Expr expr = Expression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            return new Stmt.Expression(expr);
         }
 
         private Expr Equality()
@@ -109,6 +154,7 @@ namespace HyggeLang
             if (Match(TokenType.FALSK)) return new Expr.Literal(false);
             if (Match(TokenType.SANDT)) return new Expr.Literal(true);
             if (Match(TokenType.INGENTING)) return new Expr.Literal(null);
+            if (Match(TokenType.IDENTIFIER)) return new Expr.Variable(Previous());
 
             if (Match(TokenType.NUMBER, TokenType.STRING)) return new Expr.Literal(Previous().Literal);
 
