@@ -21,7 +21,7 @@ namespace HyggeLang
             { "ellers", TokenType.ELLERS },
             { "falsk", TokenType.FALSK },
             { "for", TokenType.FOR },
-            { "sjov", TokenType.SJOV },
+            { "gøremål", TokenType.GØREMÅL },
             { "hvis", TokenType.HIVS },
             { "ingenting", TokenType.INGENTING },
             { "eller", TokenType.ELLER },

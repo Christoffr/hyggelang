@@ -34,7 +34,7 @@ namespace HyggeLang
 
         private Expr Expression()
         {
-            return Equality();
+            return Assignment();
         }
 
         private Stmt Declaration()
@@ -81,6 +81,27 @@ namespace HyggeLang
             Expr expr = Expression();
             Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
             return new Stmt.Expression(expr);
+        }
+
+        private Expr Assignment()
+        {
+            Expr expr = Equality();
+
+            if (Match(TokenType.EQUAL))
+            {
+                Token equals = Previous();
+                Expr value = Assignment();
+
+                if (expr is Expr.Variable)
+                {
+                    Token name = ((Expr.Variable)expr).name;
+                    return new Expr.Assign(name, value);
+                }
+
+                Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
         }
 
         private Expr Equality()
@@ -232,7 +253,7 @@ namespace HyggeLang
                 switch (Peek().Type)
                 {
                     case TokenType.KLASSE:
-                    case TokenType.SJOV:
+                    case TokenType.GØREMÅL:
                     case TokenType.SÆT:
                     case TokenType.FOR:
                     case TokenType.IMENS:

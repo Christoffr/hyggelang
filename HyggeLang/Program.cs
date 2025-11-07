@@ -28,7 +28,9 @@
         private static void RunFile(string path)
         {
             string source = File.ReadAllText(path);
+            
             Run(source);
+            
             if (hadError)
             {
                 System.Environment.Exit(65);
@@ -46,7 +48,9 @@
             while (true)
             {
                 Console.Write("> ");
+
                 input = Console.ReadLine();
+                
                 if (input == null)
                 {
                     break;
@@ -54,6 +58,7 @@
                 else
                 {
                     Run(input);
+
                     hadError = false;
                 }
 

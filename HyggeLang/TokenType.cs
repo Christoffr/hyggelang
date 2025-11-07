@@ -22,7 +22,7 @@ namespace HyggeLang
         IDENTIFIER, STRING, NUMBER,
 
         // Keywords.
-        OG, KLASSE, ELLERS, FALSK, SJOV, FOR, HIVS, INGENTING, ELLER,
+        OG, KLASSE, ELLERS, FALSK, GØREMÅL, FOR, HIVS, INGENTING, ELLER,
         SKRIV, RETURNER, SUPER, DETTE, SANDT, SÆT, IMENS, MÅSKE,
 
         EOF

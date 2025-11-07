@@ -49,12 +49,15 @@ namespace HyggeLang
             _environment.Define(stmt.name.Lexeme, value);
             return null;
         }
+
         #endregion
 
         #region Expressions
         public object VisitAssignExpr(Expr.Assign expr)
         {
-            throw new NotImplementedException();
+            object? value = Evaluate(expr.value);
+            _environment.Assign(expr.name, value);
+            return value;
         }
 
         public object? VisitBinaryExpr(Expr.Binary expr)
