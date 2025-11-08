@@ -56,6 +56,19 @@ namespace HyggeLang
             return null;
         }
 
+        public object? VisitHvisStmt(Stmt.Hvis stmt)
+        {
+            if (IsTruthy(Evaluate(stmt.condition)))
+            {
+                Execute(stmt.thenBranch);
+            }
+            else if(stmt.elseBranch != null)
+            {
+                Execute(stmt.elseBranch);
+            }
+            return null;
+        }
+
         #endregion
 
         #region Expressions
@@ -133,9 +146,25 @@ namespace HyggeLang
             return expr.value;
         }
 
-        public object VisitLogicalExpr(Expr.Logical expr)
+        public object? VisitLogicalExpr(Expr.Logical expr)
         {
-            throw new NotImplementedException();
+            object? left = Evaluate(expr.left);
+
+            if (expr.@operator.Type == TokenType.ELLER)
+            {
+                if (IsTruthy(left))
+                {
+                    return left;
+                }
+                else
+                {
+                    if(!IsTruthy(left))
+                    {
+                        return left;
+                    }
+                }
+            }
+            return Evaluate(expr.right);
         }
 
         public object VisitSetExpr(Expr.Set expr)

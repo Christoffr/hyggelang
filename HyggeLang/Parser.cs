@@ -52,9 +52,25 @@ namespace HyggeLang
         }
         private Stmt Statement()
         {
+            if (Match(TokenType.HIVS)) return HvisStatement();
             if (Match(TokenType.SKRIV)) return SkrivStatement();
             if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
             return ExpressionStatement();
+        }
+
+        private Stmt HvisStatement()
+        {
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after 'hvis'.");
+            Expr condition = Expression();
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after hvis betingelse.");
+
+            Stmt thenBranch = Statement();
+            Stmt? elseBranch = null;
+
+            if (Match(TokenType.ELLERS))
+                elseBranch = Statement();
+
+            return new Stmt.Hvis(condition, thenBranch, elseBranch);
         }
 
         private Stmt SkrivStatement()
@@ -99,7 +115,7 @@ namespace HyggeLang
 
         private Expr Assignment()
         {
-            Expr expr = Equality();
+            Expr expr = Eller();
 
             if (Match(TokenType.EQUAL))
             {
@@ -115,6 +131,32 @@ namespace HyggeLang
                 Error(equals, "Invalid assignment target.");
             }
 
+            return expr;
+        }
+
+        private Expr Eller()
+        {
+            Expr expr = Og();
+
+            while (Match(TokenType.OG))
+            {
+                Token @operator = Previous();
+                Expr right = Og();
+                expr = new Expr.Logical(expr, @operator, right);
+            }
+            return expr;
+        }
+
+        private Expr Og()
+        {
+            Expr expr = Equality();
+
+            while (Match(TokenType.OG))
+            {
+                Token @operator = Previous();
+                Expr right = Equality();
+                expr = new Expr.Logical(expr, @operator, right);
+            }
             return expr;
         }
 

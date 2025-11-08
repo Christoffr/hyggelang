@@ -43,34 +43,25 @@
 
         private static void RunPromt()
         {
-            string? input;
-
-            ConsoleKeyInfo cki;
-
             while (true)
             {
                 Console.Write("> ");
 
-                cki = Console.ReadKey();
+                List<string> lines = new();
+                string? input;
 
-                if (cki.Key == ConsoleKey.Escape)
+                while ((input = Console.ReadLine()) != null)
                 {
+                    if (string.IsNullOrWhiteSpace(input) || input == "kør")
+                        break;
+                    lines.Add(input);
+                }
+
+                if (lines.Count == 0)
                     break;
-                }
-
-                input = Console.ReadLine();
-
-                if (input == null)
-                {
-                    break;
-                }
-                else
-                {
-                    Run(input);
-
-                    hadError = false;
-                }
-
+                string fullInput = string.Join("\n", lines);
+                Run(fullInput);
+                hadError = false;
             }
         }
 

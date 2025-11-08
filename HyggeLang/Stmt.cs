@@ -8,6 +8,7 @@
             T VisitSkrivStmt(Skriv stmt);
             T VisitSætStmt(Sæt stmt);
             T VisitBlockStmt(Block stmt);
+            T VisitHvisStmt(Hvis stmt);
         }
 
         internal class Expression : Stmt
@@ -70,8 +71,25 @@
             readonly public List<Stmt> statements;
         }
 
+        internal class Hvis : Stmt
+        {
+            internal Hvis(Expr condition, Stmt thenBranch, Stmt? elseBranch)
+            {
+                this.condition = condition;
+                this.thenBranch = thenBranch;
+                this.elseBranch = elseBranch;
+            }
+
+            internal override T Accept<T>(IVisitor<T> visitor)
+            {
+                return visitor.VisitHvisStmt(this);
+            }
+
+            readonly public  Expr condition;
+            readonly public Stmt thenBranch;
+            readonly public Stmt? elseBranch;
+        }
+
         internal abstract T Accept<T>(IVisitor<T> visitor);
     }
 }
-
-
