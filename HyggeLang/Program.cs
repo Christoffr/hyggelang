@@ -45,12 +45,21 @@
         {
             string? input;
 
+            ConsoleKeyInfo cki;
+
             while (true)
             {
                 Console.Write("> ");
 
+                cki = Console.ReadKey();
+
+                if (cki.Key == ConsoleKey.Escape)
+                {
+                    break;
+                }
+
                 input = Console.ReadLine();
-                
+
                 if (input == null)
                 {
                     break;

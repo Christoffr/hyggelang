@@ -53,6 +53,7 @@ namespace HyggeLang
         private Stmt Statement()
         {
             if (Match(TokenType.SKRIV)) return SkrivStatement();
+            if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
             return ExpressionStatement();
         }
 
@@ -81,6 +82,19 @@ namespace HyggeLang
             Expr expr = Expression();
             Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
             return new Stmt.Expression(expr);
+        }
+
+        private List<Stmt> Block()
+        {
+            List<Stmt> statements = new();
+
+            while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            Consume(TokenType.RIGHT_BRACE, "Expected '}' after block");
+            return statements;
         }
 
         private Expr Assignment()

@@ -50,6 +50,12 @@ namespace HyggeLang
             return null;
         }
 
+        public object? VisitBlockStmt(Stmt.Block stmt)
+        {
+            ExecuteBlock(stmt.statements, new Environment(_environment));
+            return null;
+        }
+
         #endregion
 
         #region Expressions
@@ -182,6 +188,26 @@ namespace HyggeLang
         private void Execute(Stmt stmt)
         {
             stmt.Accept(this);
+        }
+
+        private void ExecuteBlock(List<Stmt> statements, Environment environment)
+        {
+            Environment previous = _environment;
+
+            try
+            {
+                _environment = environment;
+
+                foreach (Stmt stmt in statements)
+                {
+                    Execute(stmt);
+                }
+            }
+            finally
+            {
+
+                _environment = previous;
+            }
         }
 
         private bool IsTruthy(object? obj)

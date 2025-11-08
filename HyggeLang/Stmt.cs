@@ -2,20 +2,21 @@
 {
     public abstract class Stmt
     {
-        internal interface IVisitor<T> 
+        internal interface IVisitor<T>
         {
             T VisitExpressionStmt(Expression stmt);
             T VisitSkrivStmt(Skriv stmt);
             T VisitSætStmt(Sæt stmt);
+            T VisitBlockStmt(Block stmt);
         }
 
-        internal class Expression: Stmt 
+        internal class Expression : Stmt
         {
-            internal Expression(Expr expression) 
+            internal Expression(Expr expression)
             {
                 this.expression = expression;
             }
-            internal override T Accept<T>(IVisitor<T> visitor) 
+            internal override T Accept<T>(IVisitor<T> visitor)
             {
                 return visitor.VisitExpressionStmt(this);
             }
@@ -52,6 +53,21 @@
 
             readonly public Token name;
             readonly public Expr? initializer;
+        }
+
+        internal class Block : Stmt
+        {
+            internal Block(List<Stmt> statements)
+            {
+                this.statements = statements;
+            }
+
+            internal override T Accept<T>(IVisitor<T> visitor)
+            {
+                return visitor.VisitBlockStmt(this);
+            }
+
+            readonly public List<Stmt> statements;
         }
 
         internal abstract T Accept<T>(IVisitor<T> visitor);
