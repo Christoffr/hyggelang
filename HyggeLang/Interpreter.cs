@@ -69,6 +69,15 @@ namespace HyggeLang
             return null;
         }
 
+        public object? VisitImensStmt(Stmt.Imens stmt)
+        {
+            while (IsTruthy(Evaluate(stmt.condition)))
+            {
+                Execute(stmt.body);
+            }
+            return null;
+        }
+
         #endregion
 
         #region Expressions

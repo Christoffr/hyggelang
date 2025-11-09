@@ -1,4 +1,6 @@
-﻿namespace HyggeLang
+﻿using System.Diagnostics;
+
+namespace HyggeLang
 {
     public abstract class Stmt
     {
@@ -9,6 +11,7 @@
             T VisitSætStmt(Sæt stmt);
             T VisitBlockStmt(Block stmt);
             T VisitHvisStmt(Hvis stmt);
+            T VisitImensStmt(Imens stmt);
         }
 
         internal class Expression : Stmt
@@ -85,9 +88,26 @@
                 return visitor.VisitHvisStmt(this);
             }
 
-            readonly public  Expr condition;
+            readonly public Expr condition;
             readonly public Stmt thenBranch;
             readonly public Stmt? elseBranch;
+        }
+
+        internal class Imens : Stmt
+        {
+            internal Imens(Expr condition, Stmt body)
+            {
+                this.condition = condition;
+                this.body = body;
+            }
+
+            internal override T Accept<T>(IVisitor<T> visitor)
+            {
+                return visitor.VisitImensStmt(this);
+            }
+
+            readonly public Expr condition;
+            readonly public Stmt body;
         }
 
         internal abstract T Accept<T>(IVisitor<T> visitor);

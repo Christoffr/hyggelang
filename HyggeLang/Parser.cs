@@ -54,6 +54,7 @@ namespace HyggeLang
         {
             if (Match(TokenType.HIVS)) return HvisStatement();
             if (Match(TokenType.SKRIV)) return SkrivStatement();
+            if (Match(TokenType.IMENS)) return ImensStatement();
             if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
             return ExpressionStatement();
         }
@@ -93,6 +94,17 @@ namespace HyggeLang
             Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
             return new Stmt.Sæt(name, initializer);
         }
+
+        private Stmt ImensStatement()
+        {
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after 'imens'.");
+            Expr condition = Expression();
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
+            Stmt body = Statement();
+
+            return new Stmt.Imens(condition, body);
+        }
+
         private Stmt ExpressionStatement()
         {
             Expr expr = Expression();
