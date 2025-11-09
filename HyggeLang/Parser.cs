@@ -138,7 +138,7 @@ namespace HyggeLang
         {
             Expr expr = Og();
 
-            while (Match(TokenType.OG))
+            while (Match(TokenType.ELLER))
             {
                 Token @operator = Previous();
                 Expr right = Og();
