@@ -52,11 +52,56 @@ namespace HyggeLang
         }
         private Stmt Statement()
         {
+            if (Match(TokenType.FOR)) return ForStatement();
             if (Match(TokenType.HIVS)) return HvisStatement();
             if (Match(TokenType.SKRIV)) return SkrivStatement();
             if (Match(TokenType.IMENS)) return ImensStatement();
             if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
             return ExpressionStatement();
+        }
+
+        private Stmt ForStatement()
+        {
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+
+            Stmt? initializer;
+            if (Match(TokenType.SEMICOLON))
+            {
+                initializer = null;
+            }
+            else if (Match(TokenType.SÆT))
+            {
+                initializer = SætDeclaration();
+            }
+            else
+            {
+                initializer = ExpressionStatement();
+            }
+
+            Expr? condition = null;
+            if (!Check(TokenType.SEMICOLON))
+                condition = Expression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+            Expr? increment = null;
+            if (!Check(TokenType.RIGHT_PAREN))
+                increment = Expression();
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+
+            Stmt body = Statement();
+
+            if (increment != null)
+                body = new Stmt.Block([body, new Stmt.Expression(increment)]);
+
+            if (condition == null)
+                condition = new Expr.Literal(true);
+            body = new Stmt.Imens(condition, body);
+
+            if (initializer != null)
+                body = new Stmt.Block([initializer, body]);
+            
+
+            return body;
         }
 
         private Stmt HvisStatement()
