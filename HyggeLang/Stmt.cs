@@ -12,6 +12,7 @@ namespace HyggeLang
             T VisitBlockStmt(Block stmt);
             T VisitHvisStmt(Hvis stmt);
             T VisitImensStmt(Imens stmt);
+            T VisitGøremålStmt(Gøremål stmt);
         }
 
         internal class Expression : Stmt
@@ -108,6 +109,24 @@ namespace HyggeLang
 
             readonly public Expr condition;
             readonly public Stmt body;
+        }
+
+        internal class Gøremål : Stmt
+        {
+            internal Gøremål(Token name, List<Token> @params, List<Stmt> body)
+            {
+                this.name = name;
+                this.@params = @params;
+                this.body = body;
+            }
+            internal override T Accept<T>(IVisitor<T> visitor)
+            {
+                return visitor.VisitGøremålStmt(this);
+            }
+
+            readonly public Token name;
+            readonly public List<Token> @params;
+            readonly public List<Stmt> body;
         }
 
         internal abstract T Accept<T>(IVisitor<T> visitor);

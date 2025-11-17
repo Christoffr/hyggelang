@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyggeLang.NativeClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,14 @@ namespace HyggeLang
 {
     internal class Interpreter : Expr.IVisitor<object?>, Stmt.IVisitor<object?>
     {
-        private Environment _environment = new();
+        internal readonly Environment _gloabal = new();
+        private Environment _environment;
+
+        public Interpreter()
+        {
+            _gloabal.Define("Clock", new Clock());
+            _environment = _gloabal;
+        }
 
         public void Interpret(List<Stmt> statements)
         {
@@ -78,6 +86,13 @@ namespace HyggeLang
             return null;
         }
 
+        public object? VisitGøremålStmt(Stmt.Gøremål stmt)
+        {
+            HLGøremål gøremål = new HLGøremål(stmt);
+            _environment.Define(stmt.name.Lexeme, gøremål);
+            return null;
+        }
+
         #endregion
 
         #region Expressions
@@ -135,9 +150,30 @@ namespace HyggeLang
             return null;
         }
 
-        public object VisitCallExpr(Expr.Call expr)
+        public object? VisitCallExpr(Expr.Call expr)
         {
-            throw new NotImplementedException();
+            object? callee = Evaluate(expr.callee);
+
+            List<object?> arguments = new();
+
+            foreach (Expr argument in expr.arguments)
+            {
+                arguments.Add(Evaluate(argument));
+            }
+
+            if (callee is not IHLCallable)
+            {
+                throw new RuntimeError(expr.paren,"Can only call functions and classes.");
+            }
+
+            IHLCallable function = (IHLCallable)callee;
+
+            if (arguments.Count != function.Arity)
+            {
+                throw new RuntimeError(expr.paren, $"Expected {function.Arity} arguments but got {arguments.Count}.");
+            }
+
+            return function.Call(this, arguments);
         }
 
         public object VisitGetExpr(Expr.Get expr)
@@ -228,7 +264,7 @@ namespace HyggeLang
             stmt.Accept(this);
         }
 
-        private void ExecuteBlock(List<Stmt> statements, Environment environment)
+        public void ExecuteBlock(List<Stmt> statements, Environment environment)
         {
             Environment previous = _environment;
 
